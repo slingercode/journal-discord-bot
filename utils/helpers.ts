@@ -3,14 +3,10 @@ import type { Readable } from "node:stream";
 const headers: HeadersInit = {
   Authorization: `Bot ${process.env.BOT_TOKEN}`,
   "Content-Type": "application/json; charset=UTF-8",
-  "User-Agent":
-    "DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)",
+  "User-Agent": "DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)",
 };
 
-export async function discordRequest<T>(
-  endpoint: string,
-  options: RequestInit
-): Promise<T> {
+export async function discordRequest<T>(endpoint: string, options: RequestInit): Promise<T> {
   const url = "https://discord.com/api/v10/" + endpoint;
 
   const res = await fetch(url, { headers, ...options });

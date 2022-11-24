@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { InteractionType, InteractionResponseType } from "discord-interactions";
-import { handleCommands } from "../../utils/commands";
+
 import { auth } from "../../utils/auth";
 import { DiscordResponse } from "../../types/common";
 
@@ -10,24 +10,7 @@ export const config = {
   },
 };
 
-export default async function handler(
-  request: NextApiRequest,
-  response: NextApiResponse
-) {
-  // Install commands
-  if (process.env.NODE_ENV === "development") {
-    const { install = "" } = request.query;
-
-    try {
-      if (install === "true") {
-        handleCommands(process.env.APP_ID!, process.env.SERVER_ID!);
-        return response.status(200).json({ message: "Commands installed" });
-      }
-    } catch (error) {
-      return response.status(500).json(error);
-    }
-  }
-
+export default async function (request: NextApiRequest, response: NextApiResponse) {
   try {
     const rawBody = await auth(request, response);
 

@@ -1,60 +1,22 @@
 import { CommandType, DiscordResponseCommand } from "../types/common";
 import { discordRequest } from "./helpers";
 
-const HELLO_COMMAND: CommandType = {
-  name: "hello",
-  description: "Test command with a hello message",
-};
+const appId = process.env.APP_ID!;
+const serverId = process.env.SERVER_ID!;
 
-const HELLO2_COMMAND: CommandType = {
-  name: "hello2",
-  description: "Test2 command with a hello message",
-};
-
-const TEST_COMMAND: CommandType = {
-  name: "test",
-  description: "Test command",
-};
-
-const commands = [HELLO_COMMAND, HELLO2_COMMAND, TEST_COMMAND];
-
-export function handleCommands(appId: string, serverId: string) {
-  commands.forEach(
-    async (command) => await hasCommand(appId, serverId, command)
-  );
-}
-
-export async function hasCommand(
-  appId: string,
-  serverId: string,
-  command: CommandType
-) {
+export async function getCommands() {
   const endpoint = `applications/${appId}/guilds/${serverId}/commands`;
 
   try {
-    const response = await discordRequest<DiscordResponseCommand[]>(endpoint, {
+    return await discordRequest<DiscordResponseCommand>(endpoint, {
       method: "GET",
     });
-
-    if (response) {
-      const installedNames = response.map((c) => c.name);
-
-      if (!installedNames.includes(command.name)) {
-        installCommand(appId, serverId, command);
-      } else {
-        return;
-      }
-    }
   } catch (error) {
-    console.log(error);
+    throw new Error(JSON.stringify(error));
   }
 }
 
-export async function installCommand(
-  appId: string,
-  serverId: string,
-  command: CommandType
-) {
+export async function installCommand(command: CommandType) {
   const endpoint = `applications/${appId}/guilds/${serverId}/commands`;
 
   try {
@@ -63,6 +25,34 @@ export async function installCommand(
       body: JSON.stringify(command),
     });
   } catch (error) {
-    console.log(error);
+    throw new Error(JSON.stringify(error));
+  }
+}
+
+export async function uninstallCommands(commands: string[]) {
+  const errors: string[] = [];
+
+  commands.forEach(async (commandId) => {
+    const response = await unisntallCommand(commandId);
+
+    if (typeof response === "string") {
+      errors.push(response);
+    }
+  });
+
+  return errors;
+}
+
+async function unisntallCommand(commandId: string) {
+  const endpoint = `applications/${appId}/guilds/${serverId}/commands/${commandId}`;
+
+  try {
+    await discordRequest<DiscordResponseCommand>(endpoint, {
+      method: "DELETE",
+    });
+
+    return true;
+  } catch (error) {
+    return commandId;
   }
 }
