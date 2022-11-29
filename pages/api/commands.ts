@@ -23,7 +23,7 @@ export default async function (request: NextApiRequest, response: NextApiRespons
           return response.status(200).json({ errors });
 
         default:
-          return response.status(200).json({ message: "Unsuported method" });
+          return response.status(200).json({ message: "Unsupported method" });
       }
     } catch (error) {
       return response.status(500).json({ error: JSON.stringify(error) });

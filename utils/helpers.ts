@@ -1,3 +1,4 @@
+import { NextApiRequest } from "next";
 import type { Readable } from "node:stream";
 
 const headers: HeadersInit = {
@@ -6,7 +7,7 @@ const headers: HeadersInit = {
   "User-Agent": "DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)",
 };
 
-export async function discordRequest<T>(endpoint: string, options: RequestInit): Promise<T> {
+export async function handleDiscordRequest<T>(endpoint: string, options: RequestInit): Promise<T> {
   const url = "https://discord.com/api/v10/" + endpoint;
 
   const res = await fetch(url, { headers, ...options });
@@ -19,11 +20,16 @@ export async function discordRequest<T>(endpoint: string, options: RequestInit):
   return await res.json();
 }
 
-export async function buffer(readable: Readable) {
+async function buffer(readable: Readable) {
   const chunks = [];
   for await (const chunk of readable) {
     chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
   }
 
   return Buffer.concat(chunks);
+}
+
+export async function parseRawBody(request: NextApiRequest) {
+  const buf = await buffer(request);
+  return buf.toString("utf8");
 }

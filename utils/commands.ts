@@ -1,5 +1,5 @@
 import { CommandType, DiscordResponseCommand } from "../types/common";
-import { discordRequest } from "./helpers";
+import { handleDiscordRequest } from "./helpers";
 
 const appId = process.env.APP_ID!;
 const serverId = process.env.SERVER_ID!;
@@ -8,7 +8,7 @@ export async function getCommands() {
   const endpoint = `applications/${appId}/guilds/${serverId}/commands`;
 
   try {
-    return await discordRequest<DiscordResponseCommand>(endpoint, {
+    return await handleDiscordRequest<DiscordResponseCommand>(endpoint, {
       method: "GET",
     });
   } catch (error) {
@@ -20,7 +20,7 @@ export async function installCommand(command: CommandType) {
   const endpoint = `applications/${appId}/guilds/${serverId}/commands`;
 
   try {
-    await discordRequest<DiscordResponseCommand>(endpoint, {
+    await handleDiscordRequest<DiscordResponseCommand>(endpoint, {
       method: "POST",
       body: JSON.stringify(command),
     });
@@ -47,7 +47,7 @@ async function unisntallCommand(commandId: string) {
   const endpoint = `applications/${appId}/guilds/${serverId}/commands/${commandId}`;
 
   try {
-    await discordRequest<DiscordResponseCommand>(endpoint, {
+    await handleDiscordRequest<DiscordResponseCommand>(endpoint, {
       method: "DELETE",
     });
 
